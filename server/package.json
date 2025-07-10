@@ -16,5 +16,8 @@
   "description": "ecommerce mern stack project",
   "devDependencies": {
     "morgan": "^1.10.0"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0"
   }
 }
