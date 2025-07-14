@@ -1,15 +1,33 @@
-const express = require('express');
-const app = express();
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
+const express = require('express')
+const app = express()
+const morgan = require('morgan')
 const createError = require('http-errors')
+const rateLimit = require('express-rate-limit')
+
+// ✅ Rate limiter compatible with Node v22
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 5,
+//   standardHeaders: true,
+//   legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests, try again later.',
+  },
+});
+
 
 app.use(morgan("dev"));
+app.use(limiter);
 // app.use(express.json());
 // app.use(express.urlencoded({extended: true}));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
+
 
 // Using middleware isLoggedIn:
 // const isLoggedIn = (req, res, next) =>{
@@ -33,9 +51,9 @@ app.get('/test', (req, res) => {
     });
 });
 
-app.get('/api/user', (req, res)=>{
+app.get('/api/user', (req, res) => {
 
-    console.log(req.user.id);
+    // console.log(req.user.id);
     res.status(200).send({
         message: 'user profile is returned',
     });
@@ -45,21 +63,28 @@ app.get('/api/user', (req, res)=>{
 
 app.use((req, res, next) => {
 
-    createError(404, 'route not found!')
-        
-    });
 
-    next();
+    next(createError(404, 'route not found!'));
 
 });
 
+
+
+
+
 //Using server error handling middleware
+// All the error will be handled here from all routes.
 
 app.use((err, req, res, next) => {
 
-    console.error(err.stack)
-    res.status(500).send('Something  broke')
-})
+    console.error('🔥 ERROR STACK:\n', err.stack); // ⬅️ Print full error
+    console.error('🔥 ERROR NAME:', err.name);
+    console.error('🔥 ERROR MESSAGE:', err.message);
+    return res.status(err.status || 500).json({
+        success: false,
+        message: err.message,
+    });
+});
 
 
 // app.post('/test',(req, res)=> {
