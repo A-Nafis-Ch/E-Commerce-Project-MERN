@@ -3,6 +3,7 @@ const app = express()
 const morgan = require('morgan')
 const createError = require('http-errors')
 const rateLimit = require('express-rate-limit')
+const userRouter = require('./routers/userRouter')
 
 // ✅ Rate limiter compatible with Node v22
 const limiter = rateLimit({
@@ -24,6 +25,8 @@ app.use(limiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/user", userRouter);
 
 
 
@@ -51,13 +54,7 @@ app.get('/test', (req, res) => {
     });
 });
 
-app.get('/api/user', (req, res) => {
 
-    // console.log(req.user.id);
-    res.status(200).send({
-        message: 'user profile is returned',
-    });
-});
 
 //Using client error handling middleware
 
