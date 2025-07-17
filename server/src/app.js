@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const createError = require('http-errors')
 const rateLimit = require('express-rate-limit')
 const userRouter = require('./routers/userRouter')
+const seedRouter = require('./routers/seedRouter')
 
 // ✅ Rate limiter compatible with Node v22
 const limiter = rateLimit({
@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/user", userRouter);
+app.use('/api/seed', seedRouter);
 
 
 
