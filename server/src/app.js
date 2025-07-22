@@ -4,6 +4,8 @@ const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 const userRouter = require('./routers/userRouter')
 const seedRouter = require('./routers/seedRouter')
+const { errorResponse } = require('./controllers/responseController')
+const createError = require('http-errors')
 
 // ✅ Rate limiter compatible with Node v22
 const limiter = rateLimit({
@@ -78,10 +80,10 @@ app.use((err, req, res, next) => {
     console.error('🔥 ERROR STACK:\n', err.stack); // ⬅️ Print full error
     console.error('🔥 ERROR NAME:', err.name);
     console.error('🔥 ERROR MESSAGE:', err.message);
-    return res.status(err.status || 500).json({
-        success: false,
-        message: err.message,
-    });
+    return errorResponse(res, {
+      statusCode: err.staus,
+      message: err.message,
+    })
 });
 
 
